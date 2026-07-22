@@ -248,7 +248,7 @@ footer#status {
   z-index: 50;
   background: var(--bg2);
   border-top: 1px solid var(--border);
-  max-height: 55vh;
+  max-height: 85vh;
   overflow-y: auto;
   box-shadow: 0 -12px 40px rgba(0,0,0,0.5);
 }
