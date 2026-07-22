@@ -2,7 +2,7 @@
   const $ = (id) => document.getElementById(id);
 
   const state = {
-    mode: "normal", // normal | text | apps | roku | help
+    mode: "normal", // normal | text | search | apps | roku | help
     device: null,
     apps: [],
     devices: [],
@@ -18,6 +18,8 @@
     statusMsg: $("status-msg"),
     textBar: $("text-bar"),
     textEcho: $("text-echo"),
+    searchPanel: $("search-panel"),
+    searchInput: $("search-input"),
     appsPanel: $("apps-panel"),
     appsInput: $("apps-input"),
     appsList: $("apps-list"),
@@ -124,10 +126,12 @@
     el.modeTag.textContent = mode.toUpperCase();
 
     el.textBar.classList.toggle("hidden", mode !== "text");
+    el.searchPanel.classList.toggle("hidden", mode !== "search");
     el.appsPanel.classList.toggle("hidden", mode !== "apps");
     el.rokuPanel.classList.toggle("hidden", mode !== "roku");
     el.helpPanel.classList.toggle("hidden", mode !== "help");
 
+    el.searchPanel.setAttribute("aria-hidden", mode !== "search");
     el.appsPanel.setAttribute("aria-hidden", mode !== "apps");
     el.rokuPanel.setAttribute("aria-hidden", mode !== "roku");
     el.helpPanel.setAttribute("aria-hidden", mode !== "help");
@@ -137,6 +141,7 @@
       el.textEcho.textContent = "";
       setStatus("", "text mode");
     }
+    if (mode === "search") openSearch();
     if (mode === "apps") openApps();
     if (mode === "roku") openRoku();
     if (mode === "help") setStatus("", "help");
@@ -145,9 +150,28 @@
 
   function exitMode() {
     if (state.mode === "normal") return;
+    if (state.mode === "search") el.searchInput.blur();
     if (state.mode === "apps") el.appsInput.blur();
     if (state.mode === "roku") el.rokuInput.blur();
     setMode("normal");
+  }
+
+  function openSearch() {
+    el.searchInput.value = "";
+    setStatus("", "type a query · enter to search");
+    requestAnimationFrame(() => el.searchInput.focus());
+  }
+
+  async function submitSearch() {
+    const keyword = el.searchInput.value.trim();
+    if (!keyword) return;
+    try {
+      await api("/api/search", { method: "POST", body: JSON.stringify({ keyword }) });
+      setStatus("ok", "search “" + keyword + "”");
+      setMode("normal");
+    } catch (e) {
+      setStatus("err", e.message);
+    }
   }
 
   // --- fuzzy ---
@@ -331,6 +355,20 @@
       return;
     }
 
+    if (state.mode === "search") {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        exitMode();
+        return;
+      }
+      if (e.key === "Enter") {
+        e.preventDefault();
+        submitSearch();
+        return;
+      }
+      return;
+    }
+
     if (state.mode === "apps" || state.mode === "roku") {
       if (e.key === "Escape") {
         e.preventDefault();
@@ -406,7 +444,7 @@
       e.preventDefault();
       return;
     }
-    if (e.key === " " || e.code === "Space") {
+    if (e.key === "t" && !e.ctrlKey && !e.metaKey && !e.altKey) {
       e.preventDefault();
       setMode("text");
       return;
@@ -439,6 +477,11 @@
     if (e.key === "b") {
       e.preventDefault();
       sendKey("InstantReplay");
+      return;
+    }
+    if (e.key === "s" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      e.preventDefault();
+      setMode("search");
       return;
     }
     if (e.key === "x") {

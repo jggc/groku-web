@@ -21,6 +21,7 @@ func (s *apiServer) routes() http.Handler {
 	mux.HandleFunc("/api/key", s.handleKey)
 	mux.HandleFunc("/api/launch", s.handleLaunch)
 	mux.HandleFunc("/api/text", s.handleText)
+	mux.HandleFunc("/api/search", s.handleSearch)
 
 	static, err := fs.Sub(s.web, "web")
 	if err != nil {
@@ -198,6 +199,30 @@ func (s *apiServer) handleText(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	jsonOK(w, map[string]string{"ok": "1"})
+}
+
+func (s *apiServer) handleSearch(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		jsonErr(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+	var body struct {
+		Keyword string `json:"keyword"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		jsonErr(w, http.StatusBadRequest, "invalid json")
+		return
+	}
+	loc, err := s.store.ensure()
+	if err != nil {
+		jsonErr(w, http.StatusNotFound, err.Error())
+		return
+	}
+	if err := searchBrowse(loc, body.Keyword); err != nil {
+		jsonErr(w, http.StatusBadGateway, err.Error())
+		return
+	}
+	jsonOK(w, map[string]string{"ok": "1", "keyword": strings.TrimSpace(body.Keyword)})
 }
 
 func jsonOK(w http.ResponseWriter, v any) {

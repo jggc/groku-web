@@ -14,7 +14,10 @@ go run . serve -addr :9090
 go run . serve -roku http://192.168.1.50:8060/
 ```
 
-Keyboard (vim-style): `hjkl`/arrows · `Enter` OK · `p` play · `f`/`d` ff/rew · `b` replay · `x` options · `Space` text · `a` apps · `r` device · `?` help
+Keyboard (vim-style): `hjkl`/arrows · `Enter` OK · `p` play · `f`/`d` ff/rew · `b` replay · `x` options · `s` search · `t` text · `a` apps · `r` device · `?` help
+
+- **`s` search** — type a query in the browser, Enter runs Roku global search (`/search/browse`). Not the voice-search button.
+- **`t` text** — send characters into whatever on-screen keyboard is focused on the Roku.
 
 ## Roku setting (required on OS 14.1+)
 
@@ -29,6 +32,7 @@ go build -o groku .
 ./groku discover
 ./groku home
 ./groku play
+./groku search "The Bear"
 ./groku text "Breaking Bad"
 ./groku apps
 ./groku app "Netflix"

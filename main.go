@@ -31,7 +31,7 @@ Commands:
   info            Info
   backspace       Backspace
   enter           Enter
-  search          Search
+  search <query>  Open Roku global search for query
   replay          Replay
   play            Play
   pause           Pause
@@ -59,7 +59,7 @@ func main() {
 	case "serve":
 		runServe(store, os.Args[2:])
 	case "home", "rev", "fwd", "select", "left", "right", "down", "up",
-		"back", "info", "backspace", "enter", "search":
+		"back", "info", "backspace", "enter":
 		mustKey(store, capitalize(cmd))
 	case "replay":
 		mustKey(store, "InstantReplay")
@@ -71,6 +71,18 @@ func main() {
 			fatal(err)
 		}
 		fmt.Println("Found roku at", loc)
+	case "search":
+		if len(os.Args) < 3 {
+			fmt.Print(usage)
+			os.Exit(1)
+		}
+		loc, err := store.ensure()
+		if err != nil {
+			fatal(err)
+		}
+		if err := searchBrowse(loc, strings.Join(os.Args[2:], " ")); err != nil {
+			fatal(err)
+		}
 	case "text":
 		if len(os.Args) < 3 {
 			fmt.Print(usage)

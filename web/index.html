@@ -37,7 +37,8 @@
       </div>
       <div class="row">
         <button type="button" class="key wide" data-key="InstantReplay" title="Replay (b)">↺</button>
-        <button type="button" class="key wide mode-btn" data-mode="text" title="Text (Space)">Text</button>
+        <button type="button" class="key wide mode-btn" data-mode="search" title="Search (s)">Search</button>
+        <button type="button" class="key wide mode-btn" data-mode="text" title="Text (t)">Text</button>
         <button type="button" class="key wide mode-btn" data-mode="apps" title="Apps (a)">Apps</button>
         <button type="button" class="key wide mode-btn" data-mode="roku" title="Roku (r)">Roku</button>
       </div>
@@ -54,6 +55,15 @@
     <span class="tag">TEXT</span>
     <span id="text-echo" class="echo"></span>
     <span class="hint">type to send · esc exit</span>
+  </div>
+
+  <!-- Search composer (global Roku search via ECP search/browse) -->
+  <div id="search-panel" class="panel search-panel hidden" aria-hidden="true">
+    <div class="panel-head">
+      <span class="tag">SEARCH</span>
+      <input id="search-input" type="text" autocomplete="off" spellcheck="false" placeholder="title, show, movie…" />
+      <span class="hint">↵ search · esc</span>
+    </div>
   </div>
 
   <!-- Apps picker -->
@@ -90,13 +100,17 @@
         <div><kbd>d</kbd></div><div>rewind</div>
         <div><kbd>b</kbd></div><div>instant replay</div>
         <div><kbd>x</kbd></div><div>options (∗)</div>
-        <div><kbd>Space</kbd></div><div>text input mode</div>
+        <div><kbd>s</kbd></div><div>global search (type, ↵)</div>
+        <div><kbd>t</kbd></div><div>text input mode</div>
         <div><kbd>a</kbd></div><div>apps (fuzzy)</div>
         <div><kbd>r</kbd></div><div>pick roku device</div>
         <div><kbd>?</kbd></div><div>toggle this help</div>
         <div><kbd>Esc</kbd></div><div>exit mode / close</div>
       </div>
-      <p class="help-note">Text mode sends each character on keyup. Paste works. ECP must be Enabled on the Roku (not Limited).</p>
+      <p class="help-note">
+        <strong>s</strong> opens Roku global search (not voice). Type a query in the browser, Enter runs it.
+        <strong>t</strong> sends keystrokes into on-screen fields. ECP must be Enabled (not Limited).
+      </p>
     </div>
   </div>
 

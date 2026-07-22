@@ -29,9 +29,10 @@ Browser  ──HTTP──►  groku serve (:8080)
                        ├─ GET  /api/device       active device + info
                        ├─ PUT  /api/device       select device by base URL
                        ├─ GET  /api/apps         proxy query/apps
-                       ├─ POST /api/key/:key     proxy keypress
-                       ├─ POST /api/launch/:id   proxy launch
-                       └─ POST /api/text         proxy Lit_ chars
+                       ├─ POST /api/key          proxy keypress
+                       ├─ POST /api/launch       proxy launch
+                       ├─ POST /api/text         proxy Lit_ chars
+                       └─ POST /api/search       proxy search/browse
                               │
                               └──HTTP ECP──► Roku :8060
 ```
@@ -66,12 +67,25 @@ The UI is always in exactly one mode. Mode is shown in a small status bar.
 | Mode | Enter | Exit | Behavior |
 |------|-------|------|----------|
 | **Normal** | default / Esc | — | Global key bindings (nav, transport, overlays) |
-| **Text** | `Space` | `Esc` | Keystrokes sent to Roku as `Lit_` on **keyup**; Backspace → `Backspace` |
+| **Text** | `t` | `Esc` | Keystrokes sent to Roku as `Lit_` on **keyup**; Backspace → `Backspace` |
+| **Search** | `s` | `Esc` | Type query in browser; Enter → ECP `POST /search/browse?keyword=` |
 | **Apps** | `a` | `Esc` | Fuzzy app picker; type to filter; Enter launches |
 | **Roku** | `r` | `Esc` | Device picker from live SSDP; type to filter; Enter selects |
 | **Help** | `?` | `?` or `Esc` | Bottom sheet listing all bindings |
 
-Overlays (Apps / Roku / Help) capture keys so they do not also fire Normal bindings. Text mode captures almost everything except `Esc`.
+Overlays (Apps / Roku / Search / Help) capture keys so they do not also fire Normal bindings. Text mode captures almost everything except `Esc`.
+
+### Why Search is not the remote Search key
+
+On modern Roku OS, `keypress/Search` opens **voice search**. A browser has no mic path into that HUD, so it is useless from groku.
+
+Instead, `s` opens a **local query composer**. On Enter, the server calls Roku’s global content search:
+
+```http
+POST http://<roku>:8060/search/browse?keyword=<query>
+```
+
+This still returns HTTP 200 on Roku OS 15.x (Ultra) in practice, even though older docs marked a related “search” surface as sunset. If it ever 404s, the UI surfaces the error; no silent fall-through to voice search.
 
 ---
 
@@ -91,7 +105,8 @@ Overlays (Apps / Roku / Help) capture keys so they do not also fire Normal bindi
 | `d` | Rewind | `keypress/Rev` |
 | `b` | Instant replay (~few seconds back) | `keypress/InstantReplay` |
 | `x` | Options / asterisk (*) | `keypress/Info` |
-| `Space` | Enter **Text** mode | — |
+| `t` | Enter **Text** mode | — |
+| `s` | Enter **Search** mode | compose → `/api/search` |
 | `a` | Enter **Apps** mode | loads `/api/apps` |
 | `r` | Enter **Roku** mode | loads `/api/devices` |
 | `?` | Toggle **Help** sheet | — |
@@ -99,13 +114,21 @@ Overlays (Apps / Roku / Help) capture keys so they do not also fire Normal bindi
 
 ### Text mode detail
 
-- Entered with `Space` (Space itself is not sent).
+- Entered with `t`.
 - On each **keyup** of a printable character, POST one `keypress/Lit_<urlencoded UTF-8>`.
 - `Backspace` → `keypress/Backspace`.
 - `Enter` → `keypress/Enter` (keyboard field submit, not Select).
 - `Esc` exits Text mode; nothing sent for Esc.
 - Modifier-only and browser shortcuts (Ctrl/Meta combos) are ignored.
 - Status bar shows `TEXT` and a live echo of characters sent this session.
+
+### Search mode detail
+
+- Entered with `s` (does **not** send `keypress/Search`).
+- Focus a single input; type the full query in the browser (paste OK).
+- `Enter` → `POST /api/search` `{ "keyword": "…" }` → Roku `search/browse`.
+- Roku jumps to global search results for that keyword.
+- `Esc` cancels without searching.
 
 ### Apps mode detail
 
@@ -228,7 +251,15 @@ Proxies `POST {location}launch/{id}`.
 { "text": "hello" }
 ```
 
-Sends each rune as `Lit_` sequentially (CLI parity). UI primarily uses per-key `POST /api/key/Lit_…` for snappier feedback; bulk endpoint kept for paste.
+Sends each rune as `Lit_` sequentially (CLI parity). UI primarily uses per-key `POST /api/key` with `Lit_…` for snappier feedback; bulk endpoint kept for paste.
+
+### `POST /api/search`
+
+```json
+{ "keyword": "the bear" }
+```
+
+Proxies `POST {location}search/browse?keyword=…`. Opens Roku global search results (not voice search).
 
 ### Static
 
@@ -333,7 +364,8 @@ sort by score desc, then name length asc
 3. `hjkl` + arrows move focus on Roku home
 4. `Enter` opens tile; `Backspace` back
 5. `a` → type `net` → Netflix → Enter launches
-6. `Space` → type into Roku search → `Esc`
+6. `t` → type into an on-screen field → `Esc`
+6b. `s` → type “the bear” → Enter opens global search results
 7. `p`/`f`/`d`/`b` during video
 8. `x` opens options star panel
 9. `?` toggles help

@@ -200,6 +200,24 @@ func launchApp(loc, id string) error {
 	return nil
 }
 
+func searchBrowse(loc, keyword string) error {
+	keyword = strings.TrimSpace(keyword)
+	if keyword == "" {
+		return fmt.Errorf("empty search")
+	}
+	u := normalizeLocation(loc) + "search/browse?keyword=" + url.QueryEscape(keyword)
+	resp, err := httpClient.PostForm(u, nil)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	body, _ := io.ReadAll(io.LimitReader(resp.Body, 512))
+	if resp.StatusCode != http.StatusOK {
+		return ecpErr(resp.StatusCode, body)
+	}
+	return nil
+}
+
 func sendText(loc, text string) error {
 	for _, r := range text {
 		if r == utf8.RuneError {

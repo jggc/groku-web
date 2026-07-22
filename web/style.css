@@ -292,6 +292,10 @@ kbd {
 }
 
 body.mode-text main { opacity: 0.45; }
+body.mode-search main,
 body.mode-apps main,
 body.mode-roku main,
 body.mode-help main { opacity: 0.35; }
+
+.search-panel { max-height: none; }
+.search-panel .panel-head { border-bottom: none; padding-bottom: 16px; }
