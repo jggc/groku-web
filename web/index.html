@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>groku</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="brand">groku</div>
+      <div id="device-label" class="device-label">no device</div>
+      <button type="button" id="btn-help" class="icon-btn" title="Help (?)">?</button>
+    </header>
+
+    <main>
+      <div class="pad">
+        <button type="button" class="key" data-key="Up" title="Up (k)">▲</button>
+        <div class="pad-mid">
+          <button type="button" class="key" data-key="Left" title="Left (h)">◀</button>
+          <button type="button" class="key ok" data-key="Select" title="OK (Enter)">OK</button>
+          <button type="button" class="key" data-key="Right" title="Right (l)">▶</button>
+        </div>
+        <button type="button" class="key" data-key="Down" title="Down (j)">▼</button>
+      </div>
+
+      <div class="row">
+        <button type="button" class="key wide" data-key="Back" title="Back (Backspace)">Back</button>
+        <button type="button" class="key wide" data-key="Home" title="Home (H)">Home</button>
+        <button type="button" class="key wide" data-key="Info" title="Options (x)">∗</button>
+      </div>
+      <div class="row">
+        <button type="button" class="key wide" data-key="Rev" title="Rewind (d)">«</button>
+        <button type="button" class="key wide" data-key="Play" title="Play/Pause (p)">▶/❚❚</button>
+        <button type="button" class="key wide" data-key="Fwd" title="Fwd (f)">»</button>
+      </div>
+      <div class="row">
+        <button type="button" class="key wide" data-key="InstantReplay" title="Replay (b)">↺</button>
+        <button type="button" class="key wide mode-btn" data-mode="text" title="Text (Space)">Text</button>
+        <button type="button" class="key wide mode-btn" data-mode="apps" title="Apps (a)">Apps</button>
+        <button type="button" class="key wide mode-btn" data-mode="roku" title="Roku (r)">Roku</button>
+      </div>
+    </main>
+
+    <footer id="status">
+      <span id="mode-tag" class="tag">NORMAL</span>
+      <span id="status-msg">ready</span>
+    </footer>
+  </div>
+
+  <!-- Text mode banner -->
+  <div id="text-bar" class="overlay-bar hidden">
+    <span class="tag">TEXT</span>
+    <span id="text-echo" class="echo"></span>
+    <span class="hint">type to send · esc exit</span>
+  </div>
+
+  <!-- Apps picker -->
+  <div id="apps-panel" class="panel hidden" aria-hidden="true">
+    <div class="panel-head">
+      <span class="tag">APPS</span>
+      <input id="apps-input" type="text" autocomplete="off" spellcheck="false" placeholder="fuzzy filter…" />
+      <span class="hint">↵ launch · esc</span>
+    </div>
+    <ul id="apps-list" class="list"></ul>
+  </div>
+
+  <!-- Device picker -->
+  <div id="roku-panel" class="panel hidden" aria-hidden="true">
+    <div class="panel-head">
+      <span class="tag">ROKU</span>
+      <input id="roku-input" type="text" autocomplete="off" spellcheck="false" placeholder="filter devices…" />
+      <span class="hint">scanning · ↵ select · esc</span>
+    </div>
+    <ul id="roku-list" class="list"></ul>
+  </div>
+
+  <!-- Help -->
+  <div id="help-panel" class="help hidden" aria-hidden="true">
+    <div class="help-inner">
+      <div class="help-title">keyboard</div>
+      <div class="help-grid">
+        <div><kbd>h</kbd><kbd>j</kbd><kbd>k</kbd><kbd>l</kbd> / arrows</div><div>navigate</div>
+        <div><kbd>Enter</kbd></div><div>OK / select</div>
+        <div><kbd>Backspace</kbd></div><div>back</div>
+        <div><kbd>H</kbd> / <kbd>Home</kbd></div><div>home screen</div>
+        <div><kbd>p</kbd></div><div>play / pause</div>
+        <div><kbd>f</kbd></div><div>fast forward</div>
+        <div><kbd>d</kbd></div><div>rewind</div>
+        <div><kbd>b</kbd></div><div>instant replay</div>
+        <div><kbd>x</kbd></div><div>options (∗)</div>
+        <div><kbd>Space</kbd></div><div>text input mode</div>
+        <div><kbd>a</kbd></div><div>apps (fuzzy)</div>
+        <div><kbd>r</kbd></div><div>pick roku device</div>
+        <div><kbd>?</kbd></div><div>toggle this help</div>
+        <div><kbd>Esc</kbd></div><div>exit mode / close</div>
+      </div>
+      <p class="help-note">Text mode sends each character on keyup. Paste works. ECP must be Enabled on the Roku (not Limited).</p>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
