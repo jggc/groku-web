@@ -1,6 +1,10 @@
 # groku
 
-CLI + browser remote for your [Roku](https://www.roku.com/)
+CLI + browser remote for your [Roku](https://www.roku.com/) — vim-style keys, global search, fuzzy app launcher.
+
+<p align="center">
+  <img src="assets/groku_web_normal_mode.png" alt="groku normal mode" width="420" />
+</p>
 
 ## Web UI
 
@@ -14,10 +18,52 @@ go run . serve -addr :9090
 go run . serve -roku http://192.168.1.50:8060/
 ```
 
-Keyboard (vim-style): `hjkl`/arrows · `Enter` OK · `p` play · `f`/`d` ff/rew · `b` replay · `x` options · `s` search · `t` text · `a` apps · `r` device · `?` help
+### Keyboard
 
-- **`s` search** — type a query in the browser, Enter runs Roku global search (`/search/browse`). Not the voice-search button.
-- **`t` text** — send characters into whatever on-screen keyboard is focused on the Roku.
+| Key | Action |
+|-----|--------|
+| `hjkl` / arrows | Navigate |
+| `Enter` | OK / select |
+| `Backspace` | Back |
+| `H` / `Home` | Home screen |
+| `p` | Play / pause |
+| `f` / `d` | Fast forward / rewind |
+| `b` | Instant replay |
+| `x` | Options (∗) |
+| `s` | Global search |
+| `t` | Text input mode |
+| `a` | Apps (fuzzy) |
+| `r` | Pick Roku device |
+| `?` | Toggle help |
+| `Esc` | Exit mode |
+
+### Modes
+
+**Normal** — D-pad + transport, full keyboard map.
+
+<p align="center">
+  <img src="assets/groku_web_normal_mode.png" alt="Normal mode" width="360" />
+</p>
+
+**Search (`s`)** — type a query in the browser, Enter runs Roku global search (`/search/browse`). Not the voice-search button.
+
+<p align="center">
+  <img src="assets/groku_web_app_search_mode.png" alt="Search mode" width="360" />
+</p>
+
+**Text (`t`)** — each keystroke is sent to the focused on-screen field. Paste works.
+
+<p align="center">
+  <img src="assets/groku_web_text_input_mode.png" alt="Text input mode" width="360" />
+</p>
+
+**Help (`?`)** — bottom sheet with every binding.
+
+<p align="center">
+  <img src="assets/groku_web_help_mode.png" alt="Help mode" width="360" />
+</p>
+
+Also: **`a`** fuzzy app launcher · **`r`** live SSDP device picker.
 
 ## Roku setting (required on OS 14.1+)
 
@@ -36,6 +82,7 @@ go build -o groku .
 ./groku text "Breaking Bad"
 ./groku apps
 ./groku app "Netflix"
+./groku serve
 ```
 
 ## Install
